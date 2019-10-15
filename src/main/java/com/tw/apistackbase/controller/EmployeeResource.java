@@ -3,10 +3,7 @@ package com.tw.apistackbase.controller;
 import com.tw.apistackbase.models.Employee;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +21,17 @@ public class EmployeeResource {
         employeeList.add(new Employee(4, "Xiaoxia", 15, "Female"));
     }
 
-    @RequestMapping(path="/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Employee>> getAll(){
+    @RequestMapping(path = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Employee>> getAll() {
         return ResponseEntity.ok(employeeList);
+    }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Employee> getEmployee(@PathVariable int id) {
+        Employee nullEmployee = new Employee(-1, "unknown name", -1, "unknown gender");
+        return ResponseEntity.ok(employeeList.stream()
+                .filter(employee -> employee.getId() == id)
+                .findAny()
+                .orElse(nullEmployee));
     }
 }
