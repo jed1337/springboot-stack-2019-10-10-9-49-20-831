@@ -1,6 +1,7 @@
 package com.tw.apistackbase.controller;
 
 import com.tw.apistackbase.models.Employee;
+import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +29,26 @@ public class EmployeeResource {
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Employee> getEmployee(@PathVariable int id) {
-        Employee nullEmployee = new Employee(-1, "unknown name", -1, "unknown gender");
-        return ResponseEntity.ok(employeeList.stream()
+        Employee employeeBy = findEmployeeById(id);
+        return ResponseEntity.ok(employeeBy);
+    }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
+        Employee employeeBy = findEmployeeById(id);
+
+        boolean isRemoved = employeeList.remove(employeeBy);
+        if (isRemoved) {
+            return ResponseEntity.ok("Deleted employee "+id);
+        } else {
+            return ResponseEntity.badRequest().body("No employee with id " + id + " was found");
+        }
+    }
+
+    public Employee findEmployeeById(int id){
+        return employeeList.stream()
                 .filter(employee -> employee.getId() == id)
                 .findAny()
-                .orElse(nullEmployee));
+                .orElse(null);
     }
 }
